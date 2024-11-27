@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'register',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
@@ -18,6 +18,14 @@ const routes: Routes = [
   {
     path: 'register',
     loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'add-post',
+    loadChildren: () => import('./add-post/add-post.module').then( m => m.AddPostPageModule)
+  },
+  {
+    path: 'edit-page/:id',
+    loadChildren: () => import('./edit-page/edit-page.module').then( m => m.EditPagePageModule)
   },
 ];
 

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {User} from "../models/user.model"
 import { LoadingController, ToastController, NavController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { NavComponent } from '@ionic/core';
 
 @Component({
   selector: 'app-register',
@@ -11,8 +10,6 @@ import { NavComponent } from '@ionic/core';
 })
 export class RegisterPage implements OnInit {
   user = {} as User;
-
-
   constructor(
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
@@ -21,30 +18,31 @@ export class RegisterPage implements OnInit {
   ) { }
 
   ngOnInit() {
+  }
 
-    async register(user: User){
-      if (this.formValidation()){
-        let loader = await this.loadingCtrl.create({
-          message: "Espere por favor..."
+  async register(user: User){
+    if (this.formValidation()){
+      let loader = await this.loadingCtrl.create({
+        message: "Espere por favor..."
+      })
+      await loader.present();
+
+      try {
+        await this.afAuth.createUserWithEmailAndPassword(user.email, user.password).then(data =>{
+          console.log(data);
+
+          this.navCtrl.navigateRoot("home")
         })
-        await loader.present();
+      } catch (e:any) {
+        e.message = "Error al registrarse";
+        let errorMessage = e.message || e.getLocalizedMessage();
 
-        try {
-          await this.afAuth.createUserWithEmailAndPassword(user.email, user.password).them(data =>{
-            console.log(data);
-
-            this.navCtrl.navigateRoot("home")
-          })
-        } catch (e:any) {
-          e.message = "Error al registrarse";
-          let errorMessage = e.message || e.getLocalizedMessage();
-
-          this.showToast(errorMessage)
-        }
-        await loader.dismiss();
+        this.showToast(errorMessage)
       }
+      await loader.dismiss();
     }
   }
+
   formValidation(){
     if(!this.user.email){
       this.showToast("Ingrese un email");
@@ -54,7 +52,7 @@ export class RegisterPage implements OnInit {
       this.showToast("Ingrese una clave");
       return false;
     }
-    return false;
+    return true;
   }
 
   showToast(message:string){
@@ -63,5 +61,4 @@ export class RegisterPage implements OnInit {
       duration: 4000
     }).then(toastData => toastData.present());
   }
-
 }
